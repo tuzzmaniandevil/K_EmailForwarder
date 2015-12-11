@@ -4,11 +4,12 @@ function storeMail(page, to, msg) {
     var db = getOrCreateUrlDb(page);
 
     var fromAddress = msg.from.toPlainAddress();
+    var toAddress = to.toPlainAddress();
 
-    var record = db.child(RECORD_NAMES.MAPPING(replaceYuckyChars(fromAddress)));
+    var record = db.child(RECORD_NAMES.MAPPING(replaceYuckyChars(toAddress)));
 
     if (isNull(record)) {
-        log.info('No record found for this address: {}', fromAddress);
+        log.info('No record found for this address: {}', toAddress);
         return;
     }
 
