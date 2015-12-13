@@ -1,6 +1,4 @@
 function storeMail(page, to, msg) {
-    log.info('Page={}, To={}, From={}, Msg={}', page, to, msg.from, msg);
-
     var db = getOrCreateUrlDb(page);
 
     var fromAddress = msg.from.toPlainAddress();
@@ -20,6 +18,22 @@ function storeMail(page, to, msg) {
         var to = toAddresses[i];
         createEmail(fromAddress, to, msg);
     }
+}
+
+function verifyMailbox(page, to) {
+
+    var db = getOrCreateUrlDb(page);
+
+    var toAddress = to.toPlainAddress();
+
+    var record = db.child(RECORD_NAMES.MAPPING(replaceYuckyChars(toAddress)));
+
+    if (isNull(record)) {
+        log.info('No record found for this address: {}', toAddress);
+        return false;
+    }
+
+    return true;
 }
 
 function createEmail(from, to, msg) {
