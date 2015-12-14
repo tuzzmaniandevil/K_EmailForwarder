@@ -5,5 +5,8 @@
     <source>/APP-INF/formatterUtils.js</source>
     
     <source>/APP-INF/IncomingMailHandler.js</source>
+    <source>/APP-INF/manageEmailForwarder.js</source>
+    
+    <menu parentId="menuTalk" id="menuManageEmailForwarder" text="Email Forwarder" path="/emailForwarder/" ordering="39"/>
 </controllers>
             

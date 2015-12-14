@@ -4,7 +4,18 @@ function storeMail(page, to, msg) {
     var fromAddress = msg.from.toPlainAddress();
     var toAddress = to.toPlainAddress();
 
-    var record = db.child(RECORD_NAMES.MAPPING(replaceYuckyChars(toAddress)));
+    /* Check for a Catch All mapping */
+    var catchAll = db.child(RECORD_NAMES.MAPPING('*'));
+    var json = JSON.parse(catchAll.json);
+    var toAddresses = json.forwardTo;
+
+    for (var i = 0; i < toAddresses.length; i++) {
+        var to = toAddresses[i];
+        createEmail(fromAddress, to, msg);
+    }
+
+    /* Check for an exact mapping */
+    var record = db.child(RECORD_NAMES.MAPPING(toAddress));
 
     if (isNull(record)) {
         log.info('No record found for this address: {}', toAddress);
@@ -26,7 +37,11 @@ function verifyMailbox(page, to) {
 
     var toAddress = to.toPlainAddress();
 
-    var record = db.child(RECORD_NAMES.MAPPING(replaceYuckyChars(toAddress)));
+    var record = db.child(RECORD_NAMES.MAPPING(toAddress));
+
+    if (isNull(record)) {
+        record = db.child(RECORD_NAMES.MAPPING('*'));
+    }
 
     if (isNull(record)) {
         log.info('No record found for this address: {}', toAddress);

@@ -8,7 +8,7 @@ var RECORD_TYPES = {
 };
 
 var RECORD_NAMES = {
-    MAPPING: function (fromAddress) {
-        return 'mapping_' + fromAddress;
+    MAPPING: function (to) {
+        return 'mapping_' + replaceYuckyChars(to);
     }
 };
