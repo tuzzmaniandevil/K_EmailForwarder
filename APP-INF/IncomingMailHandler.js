@@ -6,12 +6,14 @@ function storeMail(page, to, msg) {
 
     /* Check for a Catch All mapping */
     var catchAll = db.child(RECORD_NAMES.MAPPING('*'));
-    var json = JSON.parse(catchAll.json);
-    var toAddresses = json.forwardTo;
+    if (isNotNull(catchAll)) {
+        var json = JSON.parse(catchAll.json);
+        var toAddresses = json.forwardTo;
 
-    for (var i = 0; i < toAddresses.length; i++) {
-        var to = toAddresses[i];
-        createEmail(fromAddress, to, msg);
+        for (var i = 0; i < toAddresses.length; i++) {
+            var to = toAddresses[i];
+            createEmail(fromAddress, to, msg);
+        }
     }
 
     /* Check for an exact mapping */
@@ -19,15 +21,15 @@ function storeMail(page, to, msg) {
 
     if (isNull(record)) {
         log.info('No record found for this address: {}', toAddress);
-        return;
-    }
+    } else {
 
-    var json = JSON.parse(record.json);
-    var toAddresses = json.forwardTo;
+        var json = JSON.parse(record.json);
+        var toAddresses = json.forwardTo;
 
-    for (var i = 0; i < toAddresses.length; i++) {
-        var to = toAddresses[i];
-        createEmail(fromAddress, to, msg);
+        for (var i = 0; i < toAddresses.length; i++) {
+            var to = toAddresses[i];
+            createEmail(fromAddress, to, msg);
+        }
     }
 }
 
@@ -52,7 +54,7 @@ function verifyMailbox(page, to) {
 }
 
 function createEmail(from, to, msg) {
-    log.info('createEmail - To={}, Msg={}', to, msg);
+    log.info('createEmail - To={}, From={}, Msg={}', to, from, msg);
 
     var b = applications.email.emailBuilder();
 
@@ -69,5 +71,7 @@ function createEmail(from, to, msg) {
         b.addAttachement(att.name, att.hash, att.contentType, att.disposition);
     }
 
-    b.build();
+    var emailItem = b.build();
+
+    log.info('EmailItem: {}, Org: {}, Created Date: {}', emailItem.id, emailItem.originatingOrg.orgId, emailItem.createdDate);
 }
