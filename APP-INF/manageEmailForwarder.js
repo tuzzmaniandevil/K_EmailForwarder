@@ -40,6 +40,42 @@ function addForwarder(page, params) {
     return page.jsonResult(true, 'Successfully added.');
 }
 
+function editForwarder(page, params) {
+    log.info('editForwarder - Page={}, Params={}', page, params);
+
+    var mappingName = safeString(params.editForwarder);
+    var alias = safeString(params.alias);
+    var forwardTo = safeArray(params.forwardTo);
+
+    var db = getOrCreateUrlDb(page);
+
+    var record = db.child(mappingName);
+
+    if (isNull(record)) {
+        return page.jsonResult(false, 'a Record for ' + mappingName + ' could not be found.');
+    }
+
+    var d = {
+        "emailAlias": alias,
+        "forwardTo": []
+    };
+
+    for (var i = 0; i < forwardTo.length; i++) {
+        d.forwardTo.push(forwardTo[i].trim());
+    }
+
+    var newName = RECORD_NAMES.MAPPING(alias);
+    if (mappingName === newName) {
+        record.update(JSON.stringify(d));
+        return page.jsonResult(true, 'Successfully updated.');
+    } else {
+        record.delete();
+
+        db.createNew(newName, JSON.stringify(d), RECORD_TYPES.MAPPING);
+        return page.jsonResult(true, 'Successfully updated.');
+    }
+}
+
 function deleteForwarder(page, params) {
     log.info('deleteForwarder - Page={}, Params={}', page, params);
 

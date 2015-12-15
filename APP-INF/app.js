@@ -14,6 +14,7 @@ controllerMappings
         .defaultView(views.templateView('/theme/apps/emailForwarder/managerEmailForwarder.html'))
         .addMethod('GET', 'manageEmailForwarder')
         .addMethod('POST', 'addForwarder', 'createNew')
+        .addMethod('POST', 'editForwarder', 'editForwarder')
         .addMethod('POST', 'deleteForwarder', 'delForwarder')
         .build();
 

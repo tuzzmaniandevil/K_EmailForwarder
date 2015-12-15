@@ -40,9 +40,32 @@ function initCreateModal() {
     var modal = $('#modal-add-forwarder');
     var form = modal.find('form');
 
+    $('body').on('click', '.btn-edit-forwarder', function (e) {
+        e.preventDefault();
+
+        var btn = $(this);
+        var row = btn.closest('tr');
+        var data = row.data('json');
+        var name = row.data('name');
+
+        modal.find('.modal-title').html('Edit an Email Forwarder');
+        modal.find('.btn-create').html('Save');
+        modal.find('.action').attr('name', 'editForwarder');
+        modal.find('.action').val(name);
+
+        modal.find('#alias').val(data.emailAlias);
+        modal.find('#forwardTo').val(data.forwardTo.join(','));
+        
+        modal.modal('show');
+
+    });
+
     modal.on('hidden', function () {
         form.trigger('reset');
-        modal.find('.modal-title').html('Hello World');
+        modal.find('.modal-title').html('Add an Email Forwarder');
+        modal.find('.btn-create').html('Create');
+        modal.find('.action').attr('name', 'createNew');
+        modal.find('.action').val('createNew');
     });
 
     form.forms({
