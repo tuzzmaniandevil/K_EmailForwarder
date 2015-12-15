@@ -40,10 +40,9 @@ function initCreateModal() {
     var modal = $('#modal-add-forwarder');
     var form = modal.find('form');
 
-    var emailPattern = new RegExp(/^(("[\w-\s]+")|([\w-'']+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
-
     modal.on('hidden', function () {
         form.trigger('reset');
+        modal.find('.modal-title').html('Hello World');
     });
 
     form.forms({
@@ -53,33 +52,7 @@ function initCreateModal() {
             flog('target', target);
 
             target.each(function (i, item) {
-                var a = $(item);
-                var val = a.val();
-                if (a.attr('name') === "alias") {
-
-                    if (val !== "*") {
-                        if (!emailPattern.test(val)) {
-                            showValidation(a, "Please check the format of your email address, it should read like ben@somewhere.com", form);
-                            return false;
-                        }
-                    }
-                } else if (a.attr('name') === "forwardTo") {
-                    if (val.indexOf(',') > 0) {
-                        var vals = val.split(',');
-                        for (var x = 0; x < vals.length; x++) {
-                            var t = vals[x].trim();
-                            if (t.length < 1 || !emailPattern.test(t)) {
-                                showValidation(a, "Please check the format of your email address, it should read like ben@somewhere.com", form);
-                                return false;
-                            }
-                        }
-                    } else {
-                        if (!emailPattern.test(val)) {
-                            showValidation(a, "Please check the format of your email address, it should read like ben@somewhere.com", form);
-                            return false;
-                        }
-                    }
-                }
+                validateEmail(item, form);
             });
 
             return true;
@@ -94,4 +67,38 @@ function initCreateModal() {
             }
         }
     });
+}
+
+function validateEmail(elem, form) {
+    var emailPattern = new RegExp(/^(("[\w-\s]+")|([\w-'']+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
+
+    var a = $(elem);
+    var val = a.val();
+    if (a.attr('name') === "alias") {
+
+        if (val !== "*") {
+            if (!emailPattern.test(val)) {
+                showValidation(a, "Please check the format of your email address, it should read like ben@somewhere.com", form);
+                return false;
+            }
+        }
+    } else if (a.attr('name') === "forwardTo") {
+        if (val.indexOf(',') > 0) {
+            var vals = val.split(',');
+            for (var x = 0; x < vals.length; x++) {
+                var t = vals[x].trim();
+                if (t.length < 1 || !emailPattern.test(t)) {
+                    showValidation(a, "Please check the format of your email address, it should read like ben@somewhere.com", form);
+                    return false;
+                }
+            }
+        } else {
+            if (!emailPattern.test(val)) {
+                showValidation(a, "Please check the format of your email address, it should read like ben@somewhere.com", form);
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
