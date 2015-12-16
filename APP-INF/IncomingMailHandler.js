@@ -14,13 +14,13 @@
      * @param {RepoMailboxStandardMessage} msg
      */
     g._storeMail = function (page, to, msg) {
-        var db = getOrCreateUrlDb(page);
+        var db = _getOrCreateUrlDb(page);
 
         var fromAddress = msg.from.toPlainAddress();
         var toAddress = to.toPlainAddress();
 
         /* Check for a Catch All mapping */
-        var catchAll = db.child(RECORD_NAMES.MAPPING('*', page.website.id));
+        var catchAll = db.child(_config.RECORD_NAMES.MAPPING('*', page.website.id));
         if (isNotNull(catchAll)) {
             var json = JSON.parse(catchAll.json);
             var toAddresses = json.forwardTo;
@@ -32,7 +32,7 @@
         }
 
         /* Check for an exact mapping */
-        var record = db.child(RECORD_NAMES.MAPPING(to.user, page.website.id));
+        var record = db.child(_config.RECORD_NAMES.MAPPING(to.user, page.website.id));
 
         if (isNull(record)) {
             log.info('No record found for this address: {}', toAddress);
@@ -56,16 +56,16 @@
      */
     g._verifyMailbox = function (page, to) {
 
-        var db = getOrCreateUrlDb(page);
+        var db = _getOrCreateUrlDb(page);
 
         var toAddress = to.toPlainAddress();
 
-        var mappingName = RECORD_NAMES.MAPPING(to.user, page.website.id);
+        var mappingName = _config.RECORD_NAMES.MAPPING(to.user, page.website.id);
 
         var record = db.child(mappingName);
 
         if (isNull(record)) {
-            record = db.child(RECORD_NAMES.MAPPING('*', page.website.id));
+            record = db.child(_config.RECORD_NAMES.MAPPING('*', page.website.id));
         }
 
         if (isNull(record)) {

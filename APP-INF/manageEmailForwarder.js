@@ -4,18 +4,11 @@
             .adminController()
             .enabled(true)
             .path('/emailForwarder/')
-            .defaultView(views.templateView('/theme/apps/emailForwarder/managerEmailForwarder.html'))
+            .defaultView(views.templateView('/theme/apps/emailForwarder/managerEmailForwarder.html'))            
             .addMethod('GET', '_manageEmailForwarder')
             .addMethod('POST', '_addForwarder', 'createNew')
             .addMethod('POST', '_editForwarder', 'editForwarder')
             .addMethod('POST', '_deleteForwarder', 'delForwarder')
-            .build();
-
-    controllerMappings
-            .adminController()
-            .enabled(true)
-            .path('/emailForwarder')
-            .defaultView(views.redirectView('/emailForwarder/'))
             .build();
 
     /**
@@ -25,9 +18,9 @@
      */
     function manageEmailForwarder(page, params) {
         log.info('manageEmailForwarder - Page={}, Params={}', page, params);
-        var db = getOrCreateUrlDb(page);
+        var db = _getOrCreateUrlDb(page);
 
-        var mappings = db.findByType(RECORD_TYPES.MAPPING);
+        var mappings = db.findByType(_config.RECORD_TYPES.MAPPING);
 
         page.attributes.mappings = mappings;
     }
@@ -44,9 +37,9 @@
         var websiteId = safeInt(params.website);
         var forwardTo = safeArray(params.forwardTo);
 
-        var mappingName = RECORD_NAMES.MAPPING(alias, websiteId);
+        var mappingName = _config.RECORD_NAMES.MAPPING(alias, websiteId);
 
-        var db = getOrCreateUrlDb(page);
+        var db = _getOrCreateUrlDb(page);
 
         var record = db.child(mappingName);
 
@@ -68,7 +61,7 @@
             d.forwardTo.push(forwardTo[i].trim());
         }
 
-        db.createNew(mappingName, JSON.stringify(d), RECORD_TYPES.MAPPING);
+        db.createNew(mappingName, JSON.stringify(d), _config.RECORD_TYPES.MAPPING);
 
         return page.jsonResult(true, 'Successfully added.');
     }
@@ -87,7 +80,7 @@
         var websiteId = safeInt(params.website);
         var forwardTo = safeArray(params.forwardTo);
 
-        var db = getOrCreateUrlDb(page);
+        var db = _getOrCreateUrlDb(page);
 
         var record = db.child(mappingName);
 
@@ -105,14 +98,14 @@
             d.forwardTo.push(forwardTo[i].trim());
         }
 
-        var newName = RECORD_NAMES.MAPPING(alias, websiteId);
+        var newName = _config.RECORD_NAMES.MAPPING(alias, websiteId);
         if (mappingName === newName) {
             record.update(JSON.stringify(d));
             return page.jsonResult(true, 'Successfully updated.');
         } else {
             record.delete();
 
-            db.createNew(newName, JSON.stringify(d), RECORD_TYPES.MAPPING);
+            db.createNew(newName, JSON.stringify(d), _config.RECORD_TYPES.MAPPING);
             return page.jsonResult(true, 'Successfully updated.');
         }
     }
@@ -128,7 +121,7 @@
 
         var mappingName = safeString(params.delForwarder);
 
-        var db = getOrCreateUrlDb(page);
+        var db = _getOrCreateUrlDb(page);
 
         var record = db.child(mappingName);
 
