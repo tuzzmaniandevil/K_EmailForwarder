@@ -40,3 +40,18 @@ var checkRedirect = function (page, params) {
         return views.redirectView(href + '/');
     }
 };
+
+var getWebsiteById = function (page, id) {
+    var manageWebsites = page.find('/websites/');
+    var websites = manageWebsites.websiteFolders;
+    log.info("getWebsiteById id={} websites={} {}", id, websites, websites.size());
+    for (var i = 0; i < websites.size(); i++) {
+        var w = websites.get(i);
+        log.info("website {}", w.website.id);
+        if (w !== null && w.website.id === id) {
+            return w;
+        }
+    }
+
+    return null;
+};

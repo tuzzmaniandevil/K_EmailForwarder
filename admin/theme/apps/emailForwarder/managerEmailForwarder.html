@@ -11,11 +11,13 @@
             <colgroup>
                 <col />
                 <col />
+                <col />
                 <col width="100px"/>
             </colgroup>
             <thead>
                 <tr>
-                    <th>Email Address</th>
+                    <td>Website</td>
+                    <th>Alias</th>
                     <th>Forward To</th>
                     <th></th>
                 </tr>
@@ -29,6 +31,7 @@
                 #foreach($m in $page.attributes.mappings)
                 #set($json = $m.jsonObject)
                 <tr data-json="$formatter.htmlEncode($m.json)" data-name="$m.name">
+                    <td>$controllers.call('getWebsiteById', $page, $json.websiteId).title</td>
                     <td>$json.emailAlias</td>
                     <td>$formatter.toCsv($json.forwardTo)</td>
                     <td>
@@ -72,9 +75,20 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label class="col-md-4 control-label" for="alias">Email/Alias</label>
+                        <label class="col-md-4 control-label" for="website">Website</label>
                         <div class="col-md-8">
-                            <input class="form-control required" type="email" id="alias" name="alias" placeholder="E.g. joe@yourdomain.com" minlength="1" />
+                            <select id="website" name="website" class="form-control required">
+                                <option value="">[ Select One ]</option>
+                                #foreach($w in $page.find('/websites/').websiteFolders)
+                                <option value="$w.website.id">$w.title</option>
+                                #end
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="alias">Alias</label>
+                        <div class="col-md-8">
+                            <input class="form-control required" type="text" id="alias" name="alias" placeholder="E.g. joe@yourdomain.com" minlength="1" />
                         </div>
                     </div>
                     <div class="form-group">

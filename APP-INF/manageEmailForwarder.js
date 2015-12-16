@@ -1,95 +1,148 @@
-function manageEmailForwarder(page, params) {
-    log.info('manageEmailForwarder - Page={}, Params={}', page, params);
-    var db = getOrCreateUrlDb(page);
+(function (g) {
+    /*==== Admin Page Controllers ====*/
+    controllerMappings
+            .adminController()
+            .enabled(true)
+            .path('/emailForwarder/')
+            .defaultView(views.templateView('/theme/apps/emailForwarder/managerEmailForwarder.html'))
+            .addMethod('GET', '_manageEmailForwarder')
+            .addMethod('POST', '_addForwarder', 'createNew')
+            .addMethod('POST', '_editForwarder', 'editForwarder')
+            .addMethod('POST', '_deleteForwarder', 'delForwarder')
+            .build();
 
-    var mappings = db.findByType(RECORD_TYPES.MAPPING);
+    controllerMappings
+            .adminController()
+            .enabled(true)
+            .path('/emailForwarder')
+            .defaultView(views.redirectView('/emailForwarder/'))
+            .build();
 
-    page.attributes.mappings = mappings;
-}
+    /**
+     * 
+     * @param {ControllerResource} page
+     * @param {Map} params
+     */
+    function manageEmailForwarder(page, params) {
+        log.info('manageEmailForwarder - Page={}, Params={}', page, params);
+        var db = getOrCreateUrlDb(page);
 
-function addForwarder(page, params) {
-    log.info('addForwarder - Page={}, Params={}', page, params);
-    var alias = safeString(params.alias);
-    var forwardTo = safeArray(params.forwardTo);
+        var mappings = db.findByType(RECORD_TYPES.MAPPING);
 
-    var mappingName = RECORD_NAMES.MAPPING(alias);
-
-    var db = getOrCreateUrlDb(page);
-
-    var record = db.child(mappingName);
-
-    if (isNotNull(record)) {
-        return page.jsonResult(false, 'A forwarder for the alias "' + alias + '"already exists.');
+        page.attributes.mappings = mappings;
     }
 
-    if (forwardTo.length < 1) {
-        return page.jsonResult(false, 'At least one forward email address is required.')
+    /**
+     * 
+     * @param {ControllerResource} page
+     * @param {Map} params
+     * @returns {JsonResult}
+     */
+    function addForwarder(page, params) {
+        log.info('addForwarder - Page={}, Params={}', page, params);
+        var alias = safeString(params.alias);
+        var websiteId = safeInt(params.website);
+        var forwardTo = safeArray(params.forwardTo);
+
+        var mappingName = RECORD_NAMES.MAPPING(alias, websiteId);
+
+        var db = getOrCreateUrlDb(page);
+
+        var record = db.child(mappingName);
+
+        if (isNotNull(record)) {
+            return page.jsonResult(false, 'A forwarder for the alias "' + alias + '"already exists.');
+        }
+
+        if (forwardTo.length < 1) {
+            return page.jsonResult(false, 'At least one forward email address is required.')
+        }
+
+        var d = {
+            "emailAlias": alias,
+            "forwardTo": [],
+            "websiteId": websiteId
+        };
+
+        for (var i = 0; i < forwardTo.length; i++) {
+            d.forwardTo.push(forwardTo[i].trim());
+        }
+
+        db.createNew(mappingName, JSON.stringify(d), RECORD_TYPES.MAPPING);
+
+        return page.jsonResult(true, 'Successfully added.');
     }
 
-    var d = {
-        "emailAlias": alias,
-        "forwardTo": []
-    };
+    /**
+     * 
+     * @param {ControllerResource} page
+     * @param {Map} params
+     * @returns {JsonResult}
+     */
+    function editForwarder(page, params) {
+        log.info('editForwarder - Page={}, Params={}', page, params);
 
-    for (var i = 0; i < forwardTo.length; i++) {
-        d.forwardTo.push(forwardTo[i].trim());
+        var mappingName = safeString(params.editForwarder);
+        var alias = safeString(params.alias);
+        var websiteId = safeInt(params.website);
+        var forwardTo = safeArray(params.forwardTo);
+
+        var db = getOrCreateUrlDb(page);
+
+        var record = db.child(mappingName);
+
+        if (isNull(record)) {
+            return page.jsonResult(false, 'a Record for ' + mappingName + ' could not be found.');
+        }
+
+        var d = {
+            "emailAlias": alias,
+            "forwardTo": [],
+            "websiteId": websiteId
+        };
+
+        for (var i = 0; i < forwardTo.length; i++) {
+            d.forwardTo.push(forwardTo[i].trim());
+        }
+
+        var newName = RECORD_NAMES.MAPPING(alias, websiteId);
+        if (mappingName === newName) {
+            record.update(JSON.stringify(d));
+            return page.jsonResult(true, 'Successfully updated.');
+        } else {
+            record.delete();
+
+            db.createNew(newName, JSON.stringify(d), RECORD_TYPES.MAPPING);
+            return page.jsonResult(true, 'Successfully updated.');
+        }
     }
 
-    db.createNew(mappingName, JSON.stringify(d), RECORD_TYPES.MAPPING);
+    /**
+     * 
+     * @param {ControllerResource} page
+     * @param {Map} params
+     * @returns {JsonResult}
+     */
+    function deleteForwarder(page, params) {
+        log.info('deleteForwarder - Page={}, Params={}', page, params);
 
-    return page.jsonResult(true, 'Successfully added.');
-}
+        var mappingName = safeString(params.delForwarder);
 
-function editForwarder(page, params) {
-    log.info('editForwarder - Page={}, Params={}', page, params);
+        var db = getOrCreateUrlDb(page);
 
-    var mappingName = safeString(params.editForwarder);
-    var alias = safeString(params.alias);
-    var forwardTo = safeArray(params.forwardTo);
+        var record = db.child(mappingName);
 
-    var db = getOrCreateUrlDb(page);
+        if (isNull(record)) {
+            return page.jsonResult(false, 'a Record for ' + mappingName + ' could not be found.');
+        }
 
-    var record = db.child(mappingName);
-
-    if (isNull(record)) {
-        return page.jsonResult(false, 'a Record for ' + mappingName + ' could not be found.');
-    }
-
-    var d = {
-        "emailAlias": alias,
-        "forwardTo": []
-    };
-
-    for (var i = 0; i < forwardTo.length; i++) {
-        d.forwardTo.push(forwardTo[i].trim());
-    }
-
-    var newName = RECORD_NAMES.MAPPING(alias);
-    if (mappingName === newName) {
-        record.update(JSON.stringify(d));
-        return page.jsonResult(true, 'Successfully updated.');
-    } else {
         record.delete();
 
-        db.createNew(newName, JSON.stringify(d), RECORD_TYPES.MAPPING);
-        return page.jsonResult(true, 'Successfully updated.');
-    }
-}
-
-function deleteForwarder(page, params) {
-    log.info('deleteForwarder - Page={}, Params={}', page, params);
-
-    var mappingName = safeString(params.delForwarder);
-
-    var db = getOrCreateUrlDb(page);
-
-    var record = db.child(mappingName);
-
-    if (isNull(record)) {
-        return page.jsonResult(false, 'a Record for ' + mappingName + ' could not be found.');
+        return page.jsonResult(true, 'Successfully deleted.');
     }
 
-    record.delete();
-
-    return page.jsonResult(true, 'Successfully deleted.');
-}
+    g._manageEmailForwarder = manageEmailForwarder;
+    g._addForwarder = addForwarder;
+    g._editForwarder = editForwarder;
+    g._deleteForwarder = deleteForwarder;
+})(this);
