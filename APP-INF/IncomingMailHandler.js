@@ -16,6 +16,10 @@
     g._storeMail = function (page, to, msg) {
         var db = _getOrCreateUrlDb(page);
 
+        var app = applications.get(_config.APP_ID);
+        var sendAlias = app.getSetting('sendAlias');
+        log.info('storeMail db={}, to={}, msg={}, sendAlias={}', db, to, msg, sendAlias);
+
         var fromAddress = msg.from.toPlainAddress();
         var toAddress = to.toPlainAddress();
 
@@ -43,7 +47,7 @@
 
             for (var i = 0; i < toAddresses.length; i++) {
                 var to = toAddresses[i];
-                createEmail(fromAddress, to, msg);
+                createEmail(sendAlias, fromAddress, to, msg);
             }
         }
     };
@@ -57,6 +61,7 @@
     g._verifyMailbox = function (page, to) {
 
         var db = _getOrCreateUrlDb(page);
+        log.info('verifyMailbox db={}, to={}', db, to);
 
         var toAddress = to.toPlainAddress();
 
@@ -77,19 +82,19 @@
     };
 
     /**
-     * 
+     * @param {String} sendAlias
      * @param {String} from
      * @param {String} to
      * @param {RepoMailboxStandardMessage} msg
      */
-    function createEmail(from, to, msg) {
+    function createEmail(sendAlias, from, to, msg) {
         log.info('createEmail - To={}, From={}, Msg={}', to, from, msg);
 
         var b = applications.email.emailBuilder();
 
         b
                 .recipientAddress(to)
-                .fromAddress(from)
+                .fromAddress(sendAlias)
                 .replyToAddress(from)
                 .text(msg.text)
                 .subject(msg.subject)

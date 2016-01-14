@@ -19,4 +19,12 @@
     }
 
     g._config = new config();
+
+    g._saveSettings = function (page, params) {
+        var sendAlias = safeString(params.sendAlias);
+
+        page.setAppSetting(_config.APP_ID, "sendAlias", sendAlias);
+
+        return views.jsonResult(true);
+    };
 })(this);

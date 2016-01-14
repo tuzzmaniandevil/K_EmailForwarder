@@ -6,6 +6,10 @@
     <source>/APP-INF/IncomingMailHandler.js</source>
     <source>/APP-INF/manageEmailForwarder.js</source>
     
+    <settings enabled="true" path="/theme/apps/emailForwarder/settings.html">
+        <function>_saveSettings</function>
+    </settings>
+    
     <menu parentId="menuTalk" id="menuManageEmailForwarder" text="Email Forwarder" path="/emailForwarder/" ordering="39"/>
 </controllers>
             
