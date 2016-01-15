@@ -27,4 +27,10 @@
 
         return views.jsonResult(true);
     };
+
+    controllerMappings
+            .dependencies()
+            .add('email')
+            .add('KongoDB')
+            .build();
 })(this);

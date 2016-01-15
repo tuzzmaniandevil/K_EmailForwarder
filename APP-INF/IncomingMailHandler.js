@@ -98,7 +98,10 @@
                 .replyToAddress(from)
                 .text(msg.text)
                 .subject(msg.subject)
-                .html(msg.html);
+                .html(msg.html)
+                .toList(msg.to)
+                .ccList(msg.cc)
+                .bccList(msg.bcc);
 
         var attachments = msg.attachments;
         for (var i = 0; i < attachments.size(); i++) {
