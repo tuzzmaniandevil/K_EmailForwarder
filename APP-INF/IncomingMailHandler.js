@@ -31,7 +31,7 @@
 
             for (var i = 0; i < toAddresses.length; i++) {
                 var to = toAddresses[i];
-                createEmail(fromAddress, to, msg);
+                createEmail(sendAlias, fromAddress, to, msg);
             }
         }
 
