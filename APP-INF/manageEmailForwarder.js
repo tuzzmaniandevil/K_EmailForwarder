@@ -4,7 +4,7 @@
             .adminController()
             .enabled(true)
             .path('/emailForwarder/')
-            .defaultView(views.templateView('/theme/apps/emailForwarder/managerEmailForwarder.html'))            
+            .defaultView(views.templateView('/theme/apps/emailForwarder/managerEmailForwarder.html'))
             .addMethod('GET', '_manageEmailForwarder')
             .addMethod('POST', '_addForwarder', 'createNew')
             .addMethod('POST', '_editForwarder', 'editForwarder')
@@ -54,7 +54,8 @@
         var d = {
             "emailAlias": alias,
             "forwardTo": [],
-            "websiteId": websiteId
+            "websiteId": websiteId,
+            "emails": []
         };
 
         for (var i = 0; i < forwardTo.length; i++) {

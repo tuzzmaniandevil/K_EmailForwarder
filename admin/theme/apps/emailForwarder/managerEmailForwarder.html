@@ -13,12 +13,14 @@
                 <col />
                 <col />
                 <col width="100px"/>
+                <col width="100px"/>
             </colgroup>
             <thead>
                 <tr>
                     <th>Website</th>
                     <th>Alias</th>
                     <th>Forward To</th>
+                    <th>Emails</th>
                     <th></th>
                 </tr>
             </thead>
@@ -34,6 +36,7 @@
                     <td>$controllers.call('getWebsiteById', $page, $json.websiteId).title</td>
                     <td>$json.emailAlias</td>
                     <td>$formatter.toCsv($json.forwardTo)</td>
+                    <td>$!json.emails.size()</td>
                     <td>
                         <div class="visible-md visible-lg hidden-sm hidden-xs">
                             <a href="#" class="btn btn-sm btn-teal tooltips btn-edit-forwarder" data-placement="top" data-original-title="Edit"><i class="fa fa-edit"></i></a>

@@ -34,8 +34,11 @@
 
             for (var i = 0; i < toAddresses.length; i++) {
                 var to = toAddresses[i];
-                createEmail(sendAlias, fromAddress, to, msg);
+                var iId = createEmail(sendAlias, fromAddress, to, msg);
+                json.emails.push(iId);
             }
+
+            catchAll.update(JSON.stringify(json));
         }
 
         /* Check for an exact mapping */
@@ -50,8 +53,11 @@
 
             for (var i = 0; i < toAddresses.length; i++) {
                 var to = toAddresses[i];
-                createEmail(sendAlias, fromAddress, to, msg);
+                var itemId = createEmail(sendAlias, fromAddress, to, msg);
+                json.emails.push(itemId);
             }
+
+            record.update(JSON.stringify(json));
         }
     };
 
@@ -115,5 +121,7 @@
         var emailItem = b.build();
 
         log.info('EmailItem: {}, Org: {}, Created Date: {}', emailItem.id, emailItem.originatingOrg.orgId, emailItem.createdDate);
+
+        return emailItem.id;
     }
 })(this);
