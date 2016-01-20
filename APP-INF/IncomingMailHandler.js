@@ -18,7 +18,10 @@
 
         var app = applications.get(_config.APP_ID);
         var sendAlias = app.getSetting('sendAlias');
-        log.info('storeMail db={}, to={}, msg={}, sendAlias={}', db, to, msg, sendAlias);
+
+        if (isBlank(sendAlias)) {
+            sendAlias = 'forwarder@' + page.domainName;
+        }
 
         var fromAddress = msg.from.toPlainAddress();
         var toAddress = to.toPlainAddress();
