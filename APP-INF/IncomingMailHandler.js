@@ -11,60 +11,6 @@
      * 
      * @param {WebsiteRootFolder} page
      * @param {MailboxAddress} to
-     * @param {RepoMailboxStandardMessage} msg
-     */
-    g._storeMail = function (page, to, msg) {
-        var db = _getOrCreateUrlDb(page);
-
-        var app = applications.get(_config.APP_ID);
-        var sendAlias = app.getSetting('sendAlias');
-
-        if (isBlank(sendAlias)) {
-            sendAlias = 'forwarder@' + page.domainName;
-        }
-
-        var fromAddress = msg.from.toPlainAddress();
-        var toAddress = to.toPlainAddress();
-
-        /* Check for a Catch All mapping */
-        var catchAll = db.child(_config.RECORD_NAMES.MAPPING('*', page.website.id));
-        if (isNotNull(catchAll)) {
-            var json = JSON.parse(catchAll.json);
-            var toAddresses = json.forwardTo;
-
-            for (var i = 0; i < toAddresses.length; i++) {
-                var to = toAddresses[i];
-                var iId = createEmail(sendAlias, fromAddress, to, msg);
-                json.emails.push(iId);
-            }
-
-            catchAll.update(JSON.stringify(json));
-        }
-
-        /* Check for an exact mapping */
-        var record = db.child(_config.RECORD_NAMES.MAPPING(to.user, page.website.id));
-
-        if (isNull(record)) {
-            log.info('No record found for this address: {}', toAddress);
-        } else {
-
-            var json = JSON.parse(record.json);
-            var toAddresses = json.forwardTo;
-
-            for (var i = 0; i < toAddresses.length; i++) {
-                var to = toAddresses[i];
-                var itemId = createEmail(sendAlias, fromAddress, to, msg);
-                json.emails.push(itemId);
-            }
-
-            record.update(JSON.stringify(json));
-        }
-    };
-
-    /**
-     * 
-     * @param {WebsiteRootFolder} page
-     * @param {MailboxAddress} to
      * @returns {Boolean}
      */
     g._verifyMailbox = function (page, to) {
@@ -88,6 +34,83 @@
         }
 
         return true;
+    };
+
+    /**
+     * 
+     * @param {WebsiteRootFolder} page
+     * @param {MailboxAddress} to
+     * @param {RepoMailboxStandardMessage} msg
+     */
+    g._storeMail = function (page, to, msg) {
+        var db = _getOrCreateUrlDb(page);
+
+        var app = applications.get(_config.APP_ID);
+        var userApp = applications.userApp;
+        var sendAlias = app.getSetting('sendAlias');
+
+        if (isBlank(sendAlias)) {
+            sendAlias = 'forwarder@' + page.domainName;
+        }
+
+        var fromAddress = msg.from.toPlainAddress();
+        var toAddress = to.toPlainAddress();
+
+        var user = null;
+
+        /* Check for a Catch All mapping */
+        var catchAll = db.child(_config.RECORD_NAMES.MAPPING('*', page.website.id));
+        if (isNotNull(catchAll)) {
+            var json = JSON.parse(catchAll.json);
+            var toAddresses = json.forwardTo;
+
+            for (var i = 0; i < toAddresses.length; i++) {
+                var to = toAddresses[i].trim();
+                if (isNull(user)) {
+                    var p = userApp.findUserResource(to);
+                    if (isNotNull(p)) {
+                        user = p;
+                    }
+                }
+                var iId = createEmail(sendAlias, fromAddress, to, msg);
+                json.emails.push(iId);
+            }
+
+            if (isNotNull(user)) {
+                securityManager.runAsUser(user, function () {
+                    catchAll.update(JSON.stringify(json));
+                });
+            }
+        }
+
+        /* Check for an exact mapping */
+        var record = db.child(_config.RECORD_NAMES.MAPPING(to.user, page.website.id));
+
+        if (isNull(record)) {
+            log.info('No record found for this address: {}', toAddress);
+        } else {
+
+            var json = JSON.parse(record.json);
+            var toAddresses = json.forwardTo;
+
+            for (var i = 0; i < toAddresses.length; i++) {
+                var to = toAddresses[i].trim();
+                if (isNull(user)) {
+                    var p = userApp.findUserResource(to);
+                    if (isNotNull(p)) {
+                        user = p;
+                    }
+                }
+                var itemId = createEmail(sendAlias, fromAddress, to, msg);
+                json.emails.push(itemId);
+            }
+
+            if (isNotNull(user)) {
+                securityManager.runAsUser(user, function () {
+                    record.update(JSON.stringify(json));
+                });
+            }
+        }
     };
 
     /**

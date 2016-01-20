@@ -31,6 +31,7 @@
     controllerMappings
             .dependencies()
             .add('email')
+            .add('userApp')
             .add('KongoDB')
             .build();
 })(this);
