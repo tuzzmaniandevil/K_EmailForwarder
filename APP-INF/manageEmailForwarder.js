@@ -23,6 +23,7 @@
         var mappings = db.findByType(_config.RECORD_TYPES.MAPPING);
 
         page.attributes.mappings = mappings;
+        page.attributes.app = controllerMappings;
     }
 
     /**

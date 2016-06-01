@@ -74,6 +74,11 @@
                     }
                 }
                 var iId = createEmail(sendAlias, fromAddress, to, msg);
+
+                if (json.emails[0] == 0) {
+                    json.emails.splice(0, 1);
+                }
+
                 json.emails.push(iId);
             }
 
@@ -105,6 +110,11 @@
                     }
                 }
                 var itemId = createEmail(sendAlias, fromAddress, to, msg);
+
+                if (json.emails[0] == 0) {
+                    json.emails.splice(0, 1);
+                }
+
                 json.emails.push(itemId);
             }
 

@@ -33,7 +33,7 @@
                 #foreach($m in $page.attributes.mappings)
                 #set($json = $m.jsonObject)
                 <tr data-json="$formatter.htmlEncode($m.json)" data-name="$m.name">
-                    <td>$controllers.call('getWebsiteById', $page, $json.websiteId).title</td>
+                    <td>$page.attributes.app.call('getWebsiteById', $page, $json.websiteId).title</td>
                     <td>$json.emailAlias</td>
                     <td>$formatter.toCsv($json.forwardTo)</td>
                     <td>$!json.emails.size()</td>
