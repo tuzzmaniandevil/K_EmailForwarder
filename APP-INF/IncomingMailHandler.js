@@ -61,6 +61,7 @@
         /* Check for a Catch All mapping */
         var catchAll = db.child(_config.RECORD_NAMES.MAPPING('*', page.website.id));
         if (isNotNull(catchAll)) {
+            user = catchAll.get('createdBy');
             var json = JSON.parse(catchAll.json);
             var toAddresses = json.forwardTo;
 
@@ -89,7 +90,9 @@
         if (isNull(record)) {
             log.info('No record found for this address: {}', toAddress);
         } else {
-
+            if (isNull(user)) {
+                user = record.get('createdBy');
+            }
             var json = JSON.parse(record.json);
             var toAddresses = json.forwardTo;
 
