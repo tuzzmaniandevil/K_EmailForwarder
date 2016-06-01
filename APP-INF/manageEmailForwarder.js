@@ -51,11 +51,18 @@
             return page.jsonResult(false, 'At least one forward email address is required.')
         }
 
+        var createdBy = null;
+        var curUser = securityManager.currentUser;
+        if (isNotNull(curUser)) {
+            createdBy = curUser.name;
+        }
+
         var d = {
             "emailAlias": alias,
             "forwardTo": [],
             "websiteId": websiteId,
-            "emails": []
+            "emails": [],
+            "createdBy": createdBy
         };
 
         for (var i = 0; i < forwardTo.length; i++) {
@@ -89,10 +96,17 @@
             return page.jsonResult(false, 'a Record for ' + mappingName + ' could not be found.');
         }
 
+        var createdBy = null;
+        var curUser = securityManager.currentUser;
+        if (isNotNull(curUser)) {
+            createdBy = curUser.name;
+        }
+
         var d = {
             "emailAlias": alias,
             "forwardTo": [],
-            "websiteId": websiteId
+            "websiteId": websiteId,
+            "createdBy": createdBy
         };
 
         for (var i = 0; i < forwardTo.length; i++) {
