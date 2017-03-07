@@ -50,7 +50,7 @@ var getWebsiteById = function (page, id) {
     for (var i = 0; i < websites.size(); i++) {
         var w = websites.get(i);
         log.info("website {}", w.website.id);
-        if (w !== null && w.website.id === id) {
+        if (w !== null && safeInt(w.website.id) === safeInt(id)) {
             return w;
         }
     }

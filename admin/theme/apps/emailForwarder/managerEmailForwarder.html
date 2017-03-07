@@ -32,8 +32,16 @@
                 #else
                 #foreach($m in $page.attributes.mappings)
                 #set($json = $m.jsonObject)
+                #set($website = false)
+                #set($website = $controllers.call('getWebsiteById', $page, $json.websiteId).current)
                 <tr data-json="$formatter.htmlEncode($m.json)" data-name="$m.name">
-                    <td>$page.attributes.app.call('getWebsiteById', $page, $json.websiteId).title</td>
+                    <td>
+                        #if($website)
+                        $formatter.firstNotNull($website.website.title, $website.website.name) #if($website.website.domainName)($website.website.domainName)#end
+                        #else
+                        $json.websiteId
+                        #end
+                    </td>
                     <td>$json.emailAlias</td>
                     <td>$formatter.toCsv($json.forwardTo)</td>
                     <td>$!json.emails.size()</td>

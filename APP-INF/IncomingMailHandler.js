@@ -8,13 +8,12 @@
             .build();                        // Build the controller
 
     /**
-     * 
+     *
      * @param {WebsiteRootFolder} page
      * @param {MailboxAddress} to
      * @returns {Boolean}
      */
     g._verifyMailbox = function (page, to) {
-
         var db = _getOrCreateUrlDb(page);
         log.info('verifyMailbox db={}, to={}', db, to);
 
@@ -37,7 +36,7 @@
     };
 
     /**
-     * 
+     *
      * @param {WebsiteRootFolder} page
      * @param {MailboxAddress} to
      * @param {RepoMailboxStandardMessage} msg
@@ -111,7 +110,11 @@
                 }
                 var itemId = createEmail(sendAlias, fromAddress, to, msg);
 
-                if (json.emails[0] == 0) {
+                if (isNull(json.emails)) {
+                    json.emails = [];
+                }
+
+                if (isNotNull(json.emails) && json.emails[0] == 0) {
                     json.emails.splice(0, 1);
                 }
 

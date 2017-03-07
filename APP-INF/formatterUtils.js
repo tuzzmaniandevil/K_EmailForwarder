@@ -39,14 +39,14 @@ function replaceYuckyChars(s) {
 }
 
 function safeString(val) {
-    if (typeof val === "undefined") {
+    if (typeof val === "undefined" || val === null) {
         return "";
     }
-    return formatter.format(val);
+    return val.toString().trim();
 }
 
 function safeInt(val) {
-    if (typeof val === "undefined") {
+    if (typeof val === "undefined" || val === null) {
         return 0;
     }
     return parseInt(val, 10);

@@ -1,0 +1,13 @@
+{
+    "appDependencies": [
+        {
+            "appId": "KongoDB"
+        },
+        {
+            "appId": "email"
+        },
+        {
+            "appId": "userApp"
+        }
+    ]
+}
