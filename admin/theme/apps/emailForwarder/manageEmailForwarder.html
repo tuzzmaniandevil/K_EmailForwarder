@@ -1,6 +1,28 @@
 <html>
     <head>
         <title>Email Forwarder</title>
+        <style>
+            .bootstrap-tagsinput {
+                background-color: #fff;
+                border: 1px solid #dfeaf1;
+                -moz-border-radius: 0!important;
+                -webkit-border-radius: 0;
+                border-radius: 0!important;
+                color: #858585;
+                font-family: inherit;
+                font-size: 14px;
+                -moz-transition-duration: .1s;
+                -o-transition-duration: .1s;
+                -webkit-transition-duration: .1s;
+                transition-duration: .1s;
+                -moz-box-shadow: none;
+                -webkit-box-shadow: none;
+                box-shadow: none;
+                display: block;
+                width: 100%;
+                height: 34px;
+            }
+        </style>
     </head>
     <body>
         <div class="alert alert-success" role="alert">Send a copy of any incoming email from one address to another. For example, forward joe@yourdomain.com to joseph@bloggs.com so that you only have one inbox to check.</div>
@@ -105,7 +127,7 @@
                     <div class="form-group">
                         <label class="col-md-4 control-label" for="forwardTo">Forward To<small>a Comma separated list of email addresses</small></label>
                         <div class="col-md-8">
-                            <input class="form-control required" type="email" id="forwardTo" name="forwardTo" placeholder="E.g. you@anotherdomain.com" minlength="1" />
+                            <input id="forwardTo" name="forwardTo" type="text" class="form-control required" value="foo,bar,baz,roffle">
                         </div>
                     </div>
                 </div>

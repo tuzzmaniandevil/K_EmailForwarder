@@ -41,6 +41,17 @@
         var modal = $('#modal-add-forwarder');
         var form = modal.find('form');
 
+        $('#forwardTo').tagsinput();
+
+        $('#forwardTo').on('beforeItemAdd', function (e) {
+            console.log(e);
+        });
+
+        $('#forwardTo').on('itemAdded', function (e) {
+            console.log(e);
+            e.cancel = true;
+        });
+
         $('body').on('click', '.btn-edit-forwarder', function (e) {
             e.preventDefault();
 

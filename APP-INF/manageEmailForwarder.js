@@ -4,7 +4,7 @@
             .adminController()
             .enabled(true)
             .path('/emailForwarder/')
-            .defaultView(views.templateView('/theme/apps/emailForwarder/managerEmailForwarder.html'))
+            .defaultView(views.templateView('/theme/apps/emailForwarder/manageEmailForwarder.html'))
             .addMethod('GET', '_manageEmailForwarder')
             .addMethod('POST', '_addForwarder', 'createNew')
             .addMethod('POST', '_editForwarder', 'editForwarder')
@@ -12,7 +12,7 @@
             .build();
 
     /**
-     * 
+     *
      * @param {ControllerResource} page
      * @param {Map} params
      */
@@ -27,7 +27,7 @@
     }
 
     /**
-     * 
+     *
      * @param {ControllerResource} page
      * @param {Map} params
      * @returns {JsonResult}
@@ -76,7 +76,7 @@
     }
 
     /**
-     * 
+     *
      * @param {ControllerResource} page
      * @param {Map} params
      * @returns {JsonResult}
@@ -127,7 +127,7 @@
     }
 
     /**
-     * 
+     *
      * @param {ControllerResource} page
      * @param {Map} params
      * @returns {JsonResult}
