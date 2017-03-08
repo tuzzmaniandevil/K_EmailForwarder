@@ -127,7 +127,7 @@
                     <div class="form-group">
                         <label class="col-md-4 control-label" for="forwardTo">Forward To<small>a Comma separated list of email addresses</small></label>
                         <div class="col-md-8">
-                            <input id="forwardTo" name="forwardTo" type="text" class="form-control required" value="foo,bar,baz,roffle">
+                            <input id="forwardTo" name="forwardTo" type="text" class="form-control required">
                         </div>
                     </div>
                 </div>
@@ -138,11 +138,8 @@
             </form>
         </div>
         <!-- End Modal -->
+
+        <script src="/static/bootstrap-tagsinput/0.6.1/bootstrap-tagsinput.min.js" type="text/javascript">//</script>
         <script src="/theme/apps/emailForwarder/manageEmailForwarder.js" type="text/javascript">//</script>
-        <script>
-            $(function () {
-                initEmailForwarder();
-            });
-        </script>
     </body>
 </html>

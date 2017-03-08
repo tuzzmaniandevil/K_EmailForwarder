@@ -1,4 +1,4 @@
-(function (w) {
+(function ($, w) {
     w.initEmailForwarder = function () {
         initDeleteForwarder();
         initCreateModal();
@@ -40,16 +40,36 @@
     function initCreateModal() {
         var modal = $('#modal-add-forwarder');
         var form = modal.find('form');
+        var forwardTo = form.find('#forwardTo');
 
-        $('#forwardTo').tagsinput();
+        forwardTo.tagsinput();
 
-        $('#forwardTo').on('beforeItemAdd', function (e) {
-            console.log(e);
+        forwardTo.on('beforeItemAdd', function (e) {
+            var newItem = safeString(e.item);
+            var items = forwardTo.tagsinput('items');
+            var isValid = true;
+
+            // Validate the email address
+            if (!validateEmail(newItem)) {
+                e.cancel = true;
+                isValid = false;
+                flog('Invalid email address');
+            }
+
+            // Check to make sure we don't have any duplicates
+            if (isNotNull(items) && isValid) {
+                for (var i in items) {
+                    var item = safeString(items[i]).toLowerCase();
+                    if (newItem === item) {
+                        e.cancel = true;
+                        break;
+                    }
+                }
+            }
         });
 
-        $('#forwardTo').on('itemAdded', function (e) {
+        forwardTo.on('itemAdded', function (e) {
             console.log(e);
-            e.cancel = true;
         });
 
         $('body').on('click', '.btn-edit-forwarder', function (e) {
@@ -66,33 +86,34 @@
             modal.find('.action').val(name);
 
             modal.find('#alias').val(data.emailAlias);
-            modal.find('#forwardTo').val(data.forwardTo.join(','));
+            modal.find('#forwardTo').tagsinput('removeAll');
+
+            if (isNotNull(data.forwardTo)) {
+                for (var i in data.forwardTo) {
+                    var t = data.forwardTo[i];
+                    modal.find('#forwardTo').tagsinput('add', t, {preventPost: true});
+                }
+            }
+
             modal.find('#website').val(data.websiteId);
 
             modal.modal('show');
 
         });
 
-        modal.on('hidden', function () {
+        modal.on('hidden.bs.modal', function () {
             form.trigger('reset');
             modal.find('.modal-title').html('Add an Email Forwarder');
             modal.find('.btn-create').html('Create');
             modal.find('.action').attr('name', 'createNew');
             modal.find('.action').val('createNew');
+            modal.find('#forwardTo').tagsinput('removeAll');
         });
 
         form.forms({
             validate: function (form) {
                 if (!validateAlias($('input[name=alias]', form), form)) {
                     return false;
-                }
-
-                var target = $("input[type=email]", form);
-
-                for (var i = 0; i < target.length; i++) {
-                    if (!validateEmail(target[i], form)) {
-                        return false;
-                    }
                 }
 
                 return true;
@@ -124,30 +145,42 @@
         return true;
     }
 
-    function validateEmail(elem, form) {
-        var emailPattern = new RegExp(/^(("[\w-\s]+")|([\w-'']+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
+    function validateEmail(val) {
+        var emailPattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-        var a = $(elem);
-        var val = a.val();
-        if (a.attr('name') === "forwardTo") {
-            if (val.indexOf(',') > 0) {
-                var vals = val.split(',');
-                for (var x = 0; x < vals.length; x++) {
-                    var t = vals[x].trim();
-                    if (t.length < 1 || !emailPattern.test(t)) {
-                        showValidation(a, "Please check the format of your email address, it should read like ben@somewhere.com", form);
-                        return false;
-                    }
-                }
-            } else {
-                if (!emailPattern.test(val)) {
-                    showValidation(a, "Please check the format of your email address, it should read like ben@somewhere.com", form);
-                    return false;
-                }
-            }
-        }
+        var s = safeString(val);
 
-        return true;
+        return emailPattern.test(s);
     }
 
-})(window);
+    function safeString(val) {
+        if (isNull(val) || isBlank(val)) {
+            return '';
+        }
+
+        return val.toString().trim();
+    }
+
+    function isBlank(val) {
+        if (isNull(val)) {
+            return true;
+        }
+        var s = val.toString().trim();
+
+        return s.length < 1;
+    }
+
+    function isNull(val) {
+        return !isNotNull(val);
+    }
+
+    function isNotNull(val) {
+        return val !== null && typeof val !== 'undefined';
+    }
+
+    // Init Methods
+    $(function () {
+        initDeleteForwarder();
+        initCreateModal();
+    });
+})(jQuery, window);
