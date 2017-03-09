@@ -1,4 +1,4 @@
-/* global _config, applications, views, transactionManager */
+/* global _config, applications, views, transactionManager, log */
 
 (function (g) {
     g._getOrCreateUrlDb = function (page) {
@@ -12,7 +12,7 @@
         }
 
         return db;
-    }
+    };
 
     g._setAllowAccess = function (jsonDB, allowAccess) {
         transactionManager.runInTransaction(function () {

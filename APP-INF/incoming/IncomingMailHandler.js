@@ -43,7 +43,7 @@
      * @param {MailboxAddress} to
      * @param {RepoMailboxStandardMessage} msg
      */
-    g._storeMail = function (page, to, msg) {
+    g._storeMail = function (page, toAddr, msg) {
         var db = _getOrCreateUrlDb(page);
 
         var app = applications.get(g._config.APP_ID);
@@ -55,7 +55,7 @@
         }
 
         var fromAddress = msg.from.toPlainAddress();
-        var toAddress = to.toPlainAddress();
+        var toAddress = toAddr.toPlainAddress();
 
         var user = null;
 
@@ -74,13 +74,17 @@
                         user = p;
                     }
                 }
-                var iId = createEmail(sendAlias, fromAddress, to, msg);
+                var iId = createEmailItem(sendAlias, fromAddress, to, msg);
 
-                if (json.emails[0] === 0) {
-                    json.emails.splice(0, 1);
+                if (isNull(json.emailItems)) {
+                    json.emailItems = [];
                 }
 
-                json.emails.push(iId);
+                if (json.emailItems[0] === 0) {
+                    json.emailItems.splice(0, 1);
+                }
+
+                json.emailItems.push(iId);
             }
 
             if (isNotNull(user)) {
@@ -91,7 +95,7 @@
         }
 
         /* Check for an exact mapping */
-        var record = db.child(g._config.RECORD_NAMES.MAPPING(to.user, page.website.name));
+        var record = db.child(g._config.RECORD_NAMES.MAPPING(toAddr.user, page.website.name));
 
         if (isNull(record)) {
             log.info('No record found for this address: {}', toAddress);
@@ -110,17 +114,17 @@
                         user = p;
                     }
                 }
-                var itemId = createEmail(sendAlias, fromAddress, to, msg);
+                var itemId = createEmailItem(sendAlias, fromAddress, to, msg);
 
-                if (isNull(json.emails)) {
-                    json.emails = [];
+                if (isNull(json.emailItems)) {
+                    json.emailItems = [];
                 }
 
-                if (isNotNull(json.emails) && json.emails[0] === 0) {
-                    json.emails.splice(0, 1);
+                if (isNotNull(json.emailItems) && json.emailItems[0] === 0) {
+                    json.emailItems.splice(0, 1);
                 }
 
-                json.emails.push(itemId);
+                json.emailItems.push(itemId);
             }
 
             if (isNotNull(user)) {
@@ -137,8 +141,8 @@
      * @param {String} to
      * @param {RepoMailboxStandardMessage} msg
      */
-    function createEmail(sendAlias, from, to, msg) {
-        log.info('createEmail - To={}, From={}, Msg={}', to, from, msg);
+    function createEmailItem(sendAlias, from, to, msg) {
+        log.info('createEmailItem - To={}, From={}, Msg={}', to, from, msg);
 
         var b = applications.email.emailBuilder();
 
@@ -164,5 +168,60 @@
         log.info('EmailItem: {}, Org: {}, Created Date: {}', emailItem.id, emailItem.originatingOrg.orgId, emailItem.createdDate);
 
         return emailItem.id;
+    }
+
+    function storeReceivedEmail(toAddr, msg) {
+        var email = {};
+
+        email.from = parseAddress(msg.from);
+        email.to = parseAddress(toAddr);
+        email.toList = parseAddressList(msg.to);
+        email.ccList = parseAddressList(msg.cc);
+        email.bccList = parseAddressList(msg.bcc);
+        email.replyTo = parseAddress(msg.replyTo);
+        email.attachments = parseAttachmentList(msg.attachments);
+
+        email.size = safeInt(msg.size);
+
+    }
+
+    function parseAddressList(list) {
+        var emails = [];
+
+        if (isNotNull(list)) {
+            for (var i = 0; i < list.size(); i++) {
+                var addr = list.get(i);
+                var addrS = safeString(addr)
+                if (isNotBlank(addrS)) {
+                    emails.push(addrS);
+                }
+            }
+        }
+
+        return emails;
+    }
+
+    function parseAddress(addr) {
+        var addrS = safeString(addr)
+        if (isNotBlank(addrS)) {
+            return addrS;
+        } else {
+            return null;
+        }
+    }
+
+    function parseAttachmentList(list) {
+        var attachments = [];
+
+        if (isNotNull(list)) {
+            for (var i = 0; i < list.size(); i++) {
+                var att = list.get(i);
+                if (isNotNull(att)) {
+
+                }
+            }
+        }
+
+        return attachments;
     }
 })(this);

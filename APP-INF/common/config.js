@@ -12,11 +12,15 @@
         _self.RECORD_NAMES = {
             MAPPING: function (to, websiteName) {
                 return 'mapping_' + to + '_' + websiteName;
+            },
+            RECEIVED_EMAIL: function (to, websiteName) {
+                return 'received_email_' + to + '_' + websiteName;
             }
         };
 
         _self.RECORD_TYPES = {
-            MAPPING: 'MAPPING'
+            MAPPING: 'MAPPING',
+            RECEIVED_EMAIL: 'RECEIVED_EMAIL'
         };
     }
 
