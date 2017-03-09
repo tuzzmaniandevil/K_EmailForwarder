@@ -1,3 +1,5 @@
+/* global log, controllerMappings, applications, securityManager */
+
 (function (g) {
     /*==== Mailbox Controller ====*/
     controllerMappings
@@ -19,12 +21,12 @@
 
         var toAddress = to.toPlainAddress();
 
-        var mappingName = _config.RECORD_NAMES.MAPPING(to.user, page.website.id);
+        var mappingName = g._config.RECORD_NAMES.MAPPING(to.user, page.website.name);
 
         var record = db.child(mappingName);
 
         if (isNull(record)) {
-            record = db.child(_config.RECORD_NAMES.MAPPING('*', page.website.id));
+            record = db.child(g._config.RECORD_NAMES.MAPPING('*', page.website.name));
         }
 
         if (isNull(record)) {
@@ -44,7 +46,7 @@
     g._storeMail = function (page, to, msg) {
         var db = _getOrCreateUrlDb(page);
 
-        var app = applications.get(_config.APP_ID);
+        var app = applications.get(g._config.APP_ID);
         var userApp = applications.userApp;
         var sendAlias = app.getSetting('sendAlias');
 
@@ -58,7 +60,7 @@
         var user = null;
 
         /* Check for a Catch All mapping */
-        var catchAll = db.child(_config.RECORD_NAMES.MAPPING('*', page.website.id));
+        var catchAll = db.child(g._config.RECORD_NAMES.MAPPING('*', page.website.name));
         if (isNotNull(catchAll)) {
             user = catchAll.get('createdBy');
             var json = JSON.parse(catchAll.json);
@@ -74,7 +76,7 @@
                 }
                 var iId = createEmail(sendAlias, fromAddress, to, msg);
 
-                if (json.emails[0] == 0) {
+                if (json.emails[0] === 0) {
                     json.emails.splice(0, 1);
                 }
 
@@ -89,7 +91,7 @@
         }
 
         /* Check for an exact mapping */
-        var record = db.child(_config.RECORD_NAMES.MAPPING(to.user, page.website.id));
+        var record = db.child(g._config.RECORD_NAMES.MAPPING(to.user, page.website.name));
 
         if (isNull(record)) {
             log.info('No record found for this address: {}', toAddress);
@@ -114,7 +116,7 @@
                     json.emails = [];
                 }
 
-                if (isNotNull(json.emails) && json.emails[0] == 0) {
+                if (isNotNull(json.emails) && json.emails[0] === 0) {
                     json.emails.splice(0, 1);
                 }
 

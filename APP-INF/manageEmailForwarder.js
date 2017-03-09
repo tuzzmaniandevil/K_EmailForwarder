@@ -1,3 +1,5 @@
+/* global views, log, controllerMappings, securityManager */
+
 (function (g) {
     /*==== Admin Page Controllers ====*/
     controllerMappings
@@ -18,9 +20,9 @@
      */
     function manageEmailForwarder(page, params) {
         log.info('manageEmailForwarder - Page={}, Params={}', page, params);
-        var db = _getOrCreateUrlDb(page);
+        var db = g._getOrCreateUrlDb(page);
 
-        var mappings = db.findByType(_config.RECORD_TYPES.MAPPING);
+        var mappings = db.findByType(g._config.RECORD_TYPES.MAPPING);
 
         page.attributes.mappings = mappings;
         page.attributes.app = controllerMappings;
@@ -35,10 +37,10 @@
     function addForwarder(page, params) {
         log.info('addForwarder - Page={}, Params={}', page, params);
         var alias = safeString(params.alias);
-        var websiteId = safeInt(params.website);
+        var websiteName = safeInt(params.website);
         var forwardTo = safeArray(params.forwardTo);
 
-        var mappingName = _config.RECORD_NAMES.MAPPING(alias, websiteId);
+        var mappingName = g._config.RECORD_NAMES.MAPPING(alias, websiteName);
 
         var db = _getOrCreateUrlDb(page);
 
@@ -61,7 +63,7 @@
         var d = {
             "emailAlias": alias,
             "forwardTo": [],
-            "websiteId": websiteId,
+            "websiteName": websiteName,
             "emails": [],
             "createdBy": createdBy
         };
@@ -70,7 +72,7 @@
             d.forwardTo.push(forwardTo[i].trim());
         }
 
-        db.createNew(mappingName, JSON.stringify(d), _config.RECORD_TYPES.MAPPING);
+        db.createNew(mappingName, JSON.stringify(d), g._config.RECORD_TYPES.MAPPING);
 
         return page.jsonResult(true, 'Successfully added.');
     }
@@ -86,7 +88,7 @@
 
         var mappingName = safeString(params.editForwarder);
         var alias = safeString(params.alias);
-        var websiteId = safeInt(params.website);
+        var websiteName = safeInt(params.website);
         var forwardTo = safeArray(params.forwardTo);
 
         var db = _getOrCreateUrlDb(page);
@@ -106,7 +108,7 @@
         var d = {
             "emailAlias": alias,
             "forwardTo": [],
-            "websiteId": websiteId,
+            "websiteName": websiteName,
             "createdBy": createdBy
         };
 
@@ -114,14 +116,14 @@
             d.forwardTo.push(forwardTo[i].trim());
         }
 
-        var newName = _config.RECORD_NAMES.MAPPING(alias, websiteId);
+        var newName = g._config.RECORD_NAMES.MAPPING(alias, websiteName);
         if (mappingName === newName) {
             record.update(JSON.stringify(d));
             return page.jsonResult(true, 'Successfully updated.');
         } else {
             record.delete();
 
-            db.createNew(newName, JSON.stringify(d), _config.RECORD_TYPES.MAPPING);
+            db.createNew(newName, JSON.stringify(d), g._config.RECORD_TYPES.MAPPING);
             return page.jsonResult(true, 'Successfully updated.');
         }
     }

@@ -110,7 +110,7 @@
                             <select id="website" name="website" class="form-control required">
                                 <option value="">[ Select One ]</option>
                                 #foreach($w in $page.find('/websites/').websiteFolders)
-                                <option value="$w.website.id">$w.title</option>
+                                <option value="$w.website.name">$w.title</option>
                                 #end
                             </select>
                         </div>

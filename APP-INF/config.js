@@ -1,3 +1,5 @@
+/* global controllerMappings, views */
+
 (function (g) {
 
     function config() {
@@ -8,8 +10,8 @@
         _self.DB_TITLE = 'Email Forwarding DB';
 
         _self.RECORD_NAMES = {
-            MAPPING: function (to, websiteId) {
-                return 'mapping_' + to + '_' + websiteId;
+            MAPPING: function (to, websiteName) {
+                return 'mapping_' + to + '_' + websiteName;
             }
         };
 
@@ -23,7 +25,7 @@
     g._saveSettings = function (page, params) {
         var sendAlias = safeString(params.sendAlias);
 
-        page.setAppSetting(_config.APP_ID, "sendAlias", sendAlias);
+        page.setAppSetting(g._config.APP_ID, "sendAlias", sendAlias);
 
         return views.jsonResult(true);
     };

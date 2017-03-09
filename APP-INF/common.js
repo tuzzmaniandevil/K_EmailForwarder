@@ -1,3 +1,5 @@
+/* global _config, applications, views, transactionManager */
+
 (function (g) {
     g._getOrCreateUrlDb = function (page) {
         var jsonDb = page.find('/jsondb');
@@ -43,17 +45,6 @@
     };
 })(this);
 
-var getWebsiteById = function (page, id) {
-    var manageWebsites = page.find('/websites/');
-    var websites = manageWebsites.websiteFolders;
-    log.info("getWebsiteById id={} websites={} {}", id, websites, websites.size());
-    for (var i = 0; i < websites.size(); i++) {
-        var w = websites.get(i);
-        log.info("website {}", w.website.id);
-        if (w !== null && safeInt(w.website.id) === safeInt(id)) {
-            return w;
-        }
-    }
-
-    return null;
+var getWebsite = function (page, websiteName) {
+    return page.find('/websites/' + websiteName);
 };
