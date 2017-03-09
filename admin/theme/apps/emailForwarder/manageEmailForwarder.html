@@ -38,15 +38,18 @@
                 #foreach($m in $page.attributes.mappings)
                 #set($json = $m.jsonObject)
                 #set($website = false)
-                #set($website = $controllers.call('getWebsiteById', $page, $json.websiteId))
+                #set($website = $page.find("/websites/$json.websiteName"))
                 #set($currentWebsite = $website.current)
+                #set($webDomainName = false)
+                #if($currentWebsite)
                 #set($webDomainName = $formatter.getDomainName($currentWebsite.website))
+                #end
                 <tr data-json="$formatter.htmlEncode($m.json)" data-name="$m.name">
                     <td>
                         #if($website)
                         <a href="$website.externalUrl" target="_blank">$formatter.firstNotNull($website.website.title, $website.website.name)</a>
                         #else
-                        $json.websiteId
+                        $json.websiteName
                         #end
                     </td>
                     <td>$json.emailAlias#if($webDomainName)@$webDomainName#end</td>

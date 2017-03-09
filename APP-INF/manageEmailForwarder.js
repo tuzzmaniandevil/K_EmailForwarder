@@ -37,7 +37,7 @@
     function addForwarder(page, params) {
         log.info('addForwarder - Page={}, Params={}', page, params);
         var alias = safeString(params.alias);
-        var websiteName = safeInt(params.website);
+        var websiteName = safeString(params.website);
         var forwardTo = safeArray(params.forwardTo);
 
         var mappingName = g._config.RECORD_NAMES.MAPPING(alias, websiteName);
@@ -88,7 +88,7 @@
 
         var mappingName = safeString(params.editForwarder);
         var alias = safeString(params.alias);
-        var websiteName = safeInt(params.website);
+        var websiteName = safeString(params.website);
         var forwardTo = safeArray(params.forwardTo);
 
         var db = _getOrCreateUrlDb(page);

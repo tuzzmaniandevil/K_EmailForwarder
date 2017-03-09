@@ -95,7 +95,7 @@
                 }
             }
 
-            modal.find('#website').val(data.websiteId);
+            modal.find('#website').val(data.websiteName);
 
             modal.modal('show');
 
