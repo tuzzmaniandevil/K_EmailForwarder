@@ -1,15 +1,18 @@
 <controllers>
-    <source>/APP-INF/config.js</source>
-    <source>/APP-INF/common.js</source>
-    <source>/APP-INF/formatterUtils.js</source>
-    
-    <source>/APP-INF/IncomingMailHandler.js</source>
-    <source>/APP-INF/manageEmailForwarder.js</source>
-    
+    <!-- Common -->
+    <source>/APP-INF/common/config.js</source>
+    <source>/APP-INF/common/common.js</source>
+    <source>/APP-INF/common/formatterUtils.js</source>
+
+    <!-- Handle Incoming Emails -->
+    <source>/APP-INF/incoming/IncomingMailHandler.js</source>
+
+    <!-- Manage Admin Pages -->
+    <source>/APP-INF/admin/manageEmailForwarder.js</source>
+
     <settings enabled="true" path="/theme/apps/emailForwarder/settings.html">
         <function>_saveSettings</function>
     </settings>
-    
+
     <menu parentId="menuTalk" id="menuManageEmailForwarder" text="Email Forwarder" path="/emailForwarder/" ordering="39"/>
 </controllers>
-            
