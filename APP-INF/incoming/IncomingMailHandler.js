@@ -1,4 +1,4 @@
-/* global log, controllerMappings, applications, securityManager */
+/* global log, controllerMappings, applications, securityManager, fileManager */
 
 (function (g) {
     /*==== Mailbox Controller ====*/
@@ -40,7 +40,7 @@
     /**
      *
      * @param {WebsiteRootFolder} page
-     * @param {MailboxAddress} to
+     * @param {MailboxAddress} toAddr
      * @param {RepoMailboxStandardMessage} msg
      */
     g._storeMail = function (page, toAddr, msg) {
@@ -133,6 +133,15 @@
                 });
             }
         }
+
+        // Try store incoming email
+        if (isNotnNull(user)) {
+            // Store incoming email
+            securityManager.runAsUser(user, function () {
+                var incomingEmail = generateIncomingEmail(toAddr, msg);
+                db.createNew(g._config.RECORD_NAMES.RECEIVED_EMAIL(toAddress, page.website.name), JSON.stringify(incomingEmail), g._config.RECORD_TYPES.RECEIVED_EMAIL);
+            });
+        }
     };
 
     /**
@@ -170,7 +179,7 @@
         return emailItem.id;
     }
 
-    function storeReceivedEmail(toAddr, msg) {
+    function generateIncomingEmail(toAddr, msg) {
         var email = {};
 
         email.from = parseAddress(msg.from);
@@ -181,8 +190,15 @@
         email.replyTo = parseAddress(msg.replyTo);
         email.attachments = parseAttachmentList(msg.attachments);
 
+        email.subject = msg.subject;
+        email.html = msg.html;
+        email.text = msg.text;
+        email.disposition = msg.disposition;
+        email.encoding = msg.encoding;
+        email.contentLanguage = msg.contentLanguage;
         email.size = safeInt(msg.size);
 
+        email.headers = msg.headers;
     }
 
     function parseAddressList(list) {
@@ -191,7 +207,7 @@
         if (isNotNull(list)) {
             for (var i = 0; i < list.size(); i++) {
                 var addr = list.get(i);
-                var addrS = safeString(addr)
+                var addrS = safeString(addr);
                 if (isNotBlank(addrS)) {
                     emails.push(addrS);
                 }
@@ -202,7 +218,7 @@
     }
 
     function parseAddress(addr) {
-        var addrS = safeString(addr)
+        var addrS = safeString(addr);
         if (isNotBlank(addrS)) {
             return addrS;
         } else {
@@ -217,7 +233,18 @@
             for (var i = 0; i < list.size(); i++) {
                 var att = list.get(i);
                 if (isNotNull(att)) {
+                    var a = {
+                        name: att.name,
+                        contentId: att.contentId,
+                        contentType: att.contentType,
+                        disposition: att.disposition
+                    };
 
+                    var hash = fileManager.upload(att.inputStream);
+
+                    a.hash = hash;
+
+                    attachments.push(a);
                 }
             }
         }
