@@ -134,8 +134,8 @@
             }
         }
 
-        // Try store incoming email
-        if (isNotnNull(user)) {
+        // Try store incoming email 
+        if (isNotNull(user)) {
             // Store incoming email
             securityManager.runAsUser(user, function () {
                 var incomingEmail = generateIncomingEmail(toAddr, msg);
